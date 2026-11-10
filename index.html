@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f3ed" />
+  <title>Arisou-Nitsugu-Kokuyu｜告諭ビラ製作所</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="告諭ビラ製作所 ホーム"><span class="brand-mark">告</span><span class="brand-text">告諭ビラ製作所<small>ARISOU-NITSUGU-KOKUYU</small></span></a>
+      <div class="header-center"><span class="live-dot"></span> 言葉を、あの頃の紙面に。</div>
+      <div class="header-right"><span class="header-label">AN ARISOU PROJECT</span><span class="edition">第一版</span></div>
+    </header>
+
+    <main class="workspace">
+      <section class="editor" aria-labelledby="editor-heading">
+        <div class="editor-intro"><div class="eyebrow"><span class="red-dash"></span> BIRA MAKER <span class="intro-number">01 / 編集</span></div><h1 id="editor-heading">ことばを、<br><em>告諭</em>にする。</h1><p>それらしい言葉を並べたら、<br>あとは印刷機におまかせあれ。</p></div>
+        <div class="editor-scroll">
+          <div class="section-heading"><div><span class="section-index">01</span><h2>文面を整える</h2></div><span class="section-en">THE WORDS</span></div>
+          <label class="field"><span>表題 <small>TITLE</small></span><input id="title" value="皆様ニ告グ" maxlength="40" placeholder="例：皆様ニ告グ" /></label>
+          <label class="field"><span>本文 <small>MESSAGE</small></span><textarea id="body" rows="7" maxlength="600" spellcheck="false">一、明日ノコトハ明日考ヘヨ
+二、腹ガ減ッテハ何モ始マラヌ
+三、ヨク食ベヨク寝テ日々ヲ過ゴセ</textarea><span class="field-hint">改行すると、次の行から始まります。</span></label>
+          <div class="field-row"><label class="field"><span>日付 <small>DATE</small></span><input id="date" value="十一月十日" maxlength="40" /></label><label class="field"><span>差出人 <small>FROM</small></span><input id="issuer" value="地元ノ皆々" maxlength="40" /></label></div>
+          <div class="section-heading second"><div><span class="section-index">02</span><h2>印刷の風合い</h2></div><span class="section-en">THE FINISH</span></div>
+          <div class="control-title"><span>紙の色</span><small>PAPER</small></div>
+          <div class="paper-options" role="radiogroup" aria-label="紙の色"><label><input type="radio" name="paper" value="white" checked><span class="swatch white"></span>白紙</label><label><input type="radio" name="paper" value="ivory"><span class="swatch ivory"></span>生成り</label><label><input type="radio" name="paper" value="aged"><span class="swatch aged"></span>古紙</label></div>
+          <div class="slider-block"><div class="control-title"><label for="wear">印刷のかすれ</label><span id="wearValue" class="value">ほどほど</span></div><input id="wear" type="range" min="0" max="100" value="38" aria-label="印刷のかすれ"><div class="range-ends"><span>きれい</span><span>かすれ</span></div></div>
+          <div class="slider-block"><div class="control-title"><label for="shift">文字のゆらぎ</label><span id="shiftValue" class="value">ほどほど</span></div><input id="shift" type="range" min="0" max="100" value="35" aria-label="文字のゆらぎ"><div class="range-ends"><span>まっすぐ</span><span>ふぞろい</span></div></div>
+          <button class="shuffle" id="shuffle" type="button"><span class="shuffle-icon">↻</span> 風合いを変える <span class="shuffle-sub">REPRINT</span></button>
+          <div class="editor-note"><span>※</span> 架空の告諭をつくるための道具です。<br>実在の団体・時代とは関係ありません。</div>
+        </div>
+        <div class="editor-footer"><span>手製の一枚を、あなたに。</span><span>ARISOU © 2026</span></div>
+      </section>
+      <section class="preview-area" aria-label="印刷プレビュー">
+        <div class="preview-header"><div><div class="preview-kicker"><span class="red-dash"></span> PRINT PREVIEW</div><h2>仕上がりを眺める<span>。</span></h2></div><div class="preview-tools"><button id="shuffleTop" class="icon-btn" title="風合いを変える" aria-label="風合いを変える">↻</button><button id="download" class="download"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg> 画像を保存 <span>PNG</span></button></div></div>
+        <div class="preview-stage"><div class="stage-top"><span>見本 / PREVIEW</span><span>縦書き・一枚刷り</span></div><div class="paper-wrap"><canvas id="canvas" width="1200" height="1650" aria-label="作成した告諭ビラのプレビュー"></canvas><div class="paper-shadow"></div></div><div class="stage-bottom"><span><i></i> 印刷プレビュー</span><span>1200 × 1650 PX</span></div></div>
+        <div class="preview-caption"><div class="caption-icon">印</div><p><strong>一枚、一枚、少しずつ違う。</strong><br>文字のかすれやズレも、このビラの味わいです。</p><span>FIG. 01<br>告諭見本</span></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
