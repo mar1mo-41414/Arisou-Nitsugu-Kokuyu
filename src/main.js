@@ -1,5 +1,5 @@
 import './style.css';
-import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout } from './generator.js';
+import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk } from './generator.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
@@ -15,18 +15,7 @@ let renderId = 0;
 function draw() {
   const rand = randomGenerator(seed);
   const paper = document.querySelector('input[name="paper"]:checked').value;
-  const palettes = {white: ['#fffefa', '#bdb7a9'], ivory: ['#f3eedf', '#b8a98c'], aged: ['#e6dac0', '#a99673']};
-  const [base, grain] = palettes[paper];
-  ctx.fillStyle = base; ctx.fillRect(0, 0, W, H);
-  // Very faint fibres and specks are printed into the exported image, too.
-  const paperCount = paper === 'white' ? 900 : paper === 'ivory' ? 2500 : 4500;
-  ctx.fillStyle = grain;
-  for (let i = 0; i < paperCount; i++) {
-    ctx.globalAlpha = rand() * (paper === 'white' ? .045 : .10);
-    const x = rand() * W, y = rand() * H;
-    ctx.fillRect(x, y, rand() * 2 + .3, rand() * 1.5 + .3);
-  }
-  ctx.globalAlpha = 1;
+  drawPaper(ctx, W, H, paper, randomGenerator(seed ^ 0x5a17));
   inkCtx.clearRect(0, 0, W, H); inkCtx.fillStyle = '#171815';
   const shift = Number($('shift').value) / 100;
   const title = $('title').value;
@@ -51,16 +40,7 @@ function draw() {
   const issuerSize = Math.min(76, 750 / (Math.max(1, textChars(issuer).length) * 1.14));
   const issuerHeight = textChars(issuer).length * issuerSize * 1.14;
   verticalText(inkCtx, issuer, 168, Math.max(800, 1540 - issuerHeight) + issuerSize / 2, issuerSize, issuerSize * 1.14, rand, shift);
-  // Erase tiny irregular flecks from the ink layer only, preserving the paper.
-  const wear = Number($('wear').value) / 100;
-  inkCtx.globalCompositeOperation = 'destination-out';
-  const flecks = Math.floor(25000 * wear);
-  for (let i = 0; i < flecks; i++) {
-    inkCtx.globalAlpha = .2 + rand() * .7;
-    const x = rand() * W, y = rand() * H;
-    inkCtx.fillRect(x, y, .7 + rand() * (2 + wear * 4), .5 + rand() * (1 + wear * 2));
-  }
-  inkCtx.globalAlpha = 1; inkCtx.globalCompositeOperation = 'source-over';
+  wearInk(inkCtx, W, H, Number($('wear').value) / 100, randomGenerator(seed ^ 0xa35f));
   ctx.drawImage(ink, 0, 0);
   $('wearValue').textContent = settingLabel(Number($('wear').value));
   $('shiftValue').textContent = settingLabel(Number($('shift').value));

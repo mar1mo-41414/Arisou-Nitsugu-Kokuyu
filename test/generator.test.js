@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText } from '../src/generator.js';
+import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk } from '../src/generator.js';
 
 test('本文の改行ごとに段落ができ、空行も一列として残る', () => {
   const layout = bodyLayout('一、告グ\n\n二、告グ');
@@ -46,4 +46,45 @@ test('縦書きは文字ごとに描画し、英数字と長音を回転する',
   assert.deepEqual(calls.filter(c => c[0] === 'text').map(c => c[1]), ['告', 'A', '、', 'ー']);
   assert.deepEqual(calls.filter(c => c[0] === 'translate').map(c => c[2]), [20, 32, 44, 56]);
   assert.equal(calls.filter(c => c[0] === 'rotate' && c[1] === Math.PI / 2).length, 2);
+});
+
+test('ゆらぎはゼロで整列し、最大ではより大きく移動・回転する', () => {
+  function sample(shift) {
+    const translations = [], rotations = [];
+    const context = {
+      save() {}, restore() {}, translate(x, y) { translations.push([x, y]); },
+      rotate(angle) { rotations.push(angle); }, fillText() {},
+    };
+    verticalText(context, '告', 100, 100, 100, 100, () => 1, shift);
+    return { translations, rotations };
+  }
+  const zero = sample(0), middle = sample(.38), max = sample(1);
+  assert.deepEqual(zero.translations[0], [100, 100]);
+  assert.equal(zero.rotations[0], 0);
+  assert.ok(max.translations[0][0] - 100 > 3 * (middle.translations[0][0] - 100));
+  assert.ok(max.rotations[0] > 3 * middle.rotations[0]);
+});
+
+test('紙は全色で背景に加えて粒や繊維を描画し、状態を復元する', () => {
+  for (const paper of ['white', 'ivory', 'aged']) {
+    let count = 0, saved = 0, restored = 0;
+    const context = { save() { saved++; }, restore() { restored++; }, fillRect() { count++; } };
+    drawPaper(context, 1200, 1650, paper, randomGenerator(1));
+    assert.equal(count, 42001);
+    assert.equal(saved, 1);
+    assert.equal(restored, 1);
+  }
+});
+
+test('かすれはゼロで描画せず、最大では中程度より大幅に多く削る', () => {
+  function countFlecks(wear) {
+    let count = 0, mode;
+    const context = { save() {}, restore() {}, fillRect() { count++; mode = this.globalCompositeOperation; } };
+    wearInk(context, 1200, 1650, wear, randomGenerator(1));
+    return {count, mode};
+  }
+  assert.equal(countFlecks(0).count, 0);
+  const middle = countFlecks(.38), max = countFlecks(1);
+  assert.equal(max.mode, 'destination-out');
+  assert.ok(max.count > middle.count * 4);
 });

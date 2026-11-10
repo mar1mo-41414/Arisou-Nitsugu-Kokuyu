@@ -12,9 +12,11 @@ export function verticalText(context, text, x, y, size, step, random, shift, wei
   const chars = textChars(text);
   for (const char of chars) {
     if (char === '\n') continue;
-    const dx = (random() - .5) * shift * size * .09;
-    const dy = (random() - .5) * shift * size * .055;
-    const angle = (random() - .5) * shift * .045;
+    // Keep moderate settings subtle, while the maximum is visibly irregular.
+    const strong = shift ** 3;
+    const dx = (random() - .5) * size * (.09 * shift + .29 * strong);
+    const dy = (random() - .5) * size * (.055 * shift + .245 * strong);
+    const angle = (random() - .5) * (.045 * shift + .24 * strong);
     context.save();
     context.translate(x + dx, cursor + dy);
     context.rotate(angle);
@@ -46,4 +48,54 @@ export function bodyLayout(text) {
   }
   const size = 1, step = size * 1.16, rows = Math.floor(1380 / step);
   return {paragraphs, size, step, rows, columns: paragraphs.reduce((s, p) => s + Math.max(1, Math.ceil(p.length / rows)), 0)};
+}
+
+// A mixture of mottling, small grains, and short fibres remains visible even
+// when the full-resolution sheet is scaled down for the preview.
+export function drawPaper(context, width, height, paper, random) {
+  const palettes = {
+    white: ['#fffefa', '#aaa397'],
+    ivory: ['#f3eedf', '#a99a80'],
+    aged: ['#e6dac0', '#968364'],
+  };
+  const [base, grain] = palettes[paper];
+  context.save();
+  context.globalAlpha = 1;
+  context.fillStyle = base;
+  context.fillRect(0, 0, width, height);
+  context.fillStyle = grain;
+  const intensity = paper === 'white' ? .75 : paper === 'ivory' ? .9 : 1;
+  // Broad low-contrast marks make the paper less uniformly flat.
+  for (let i = 0; i < 16000; i++) {
+    context.globalAlpha = (.025 + random() * .075) * intensity;
+    context.fillRect(random() * width, random() * height, 3 + random() * 13, 2 + random() * 10);
+  }
+  // Darker grains and elongated fibres give the surface its rough texture.
+  for (let i = 0; i < 22000; i++) {
+    context.globalAlpha = (.08 + random() * .28) * intensity;
+    context.fillRect(random() * width, random() * height, .6 + random() * 4, .5 + random() * 3);
+  }
+  for (let i = 0; i < 4000; i++) {
+    context.globalAlpha = (.08 + random() * .22) * intensity;
+    const horizontal = random() < .5;
+    const length = 3 + random() * 15, thickness = .5 + random() * 1.7;
+    context.fillRect(random() * width, random() * height, horizontal ? length : thickness, horizontal ? thickness : length);
+  }
+  context.restore();
+}
+
+// Scratches erase ink only, not the textured sheet beneath it. The cubic term
+// makes the upper end much more distressed without overwhelming the defaults.
+export function wearInk(context, width, height, wear, random) {
+  if (wear <= 0) return;
+  const strong = wear ** 3;
+  const flecks = Math.floor(25000 * wear + 60000 * strong);
+  context.save();
+  context.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < flecks; i++) {
+    context.globalAlpha = .2 + random() * .8;
+    const x = random() * width, y = random() * height;
+    context.fillRect(x, y, .7 + random() * (2 + wear * 4 + strong * 3), .5 + random() * (1 + wear * 2 + strong * 1.5));
+  }
+  context.restore();
 }
