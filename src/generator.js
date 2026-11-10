@@ -5,6 +5,14 @@ export function randomGenerator(seedValue) {
 export function settingLabel(n) { return n === 0 ? 'なし' : n < 30 ? 'ひかえめ' : n < 65 ? 'ほどほど' : 'つよめ'; }
 export function textChars(value) { return Array.from(value.replace(/\r/g, '')); }
 
+// The default reflects the user's local clock at the time of saving.
+export function downloadFilename(value, now = new Date()) {
+  const pad = number => String(number).padStart(2, '0');
+  const fallback = `告諭_${String(now.getFullYear()).padStart(4, '0')}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const name = value.trim() ? value : fallback;
+  return /\.png$/i.test(name) ? name : `${name}.png`;
+}
+
 // Canvas does not provide vertical typesetting. Draw each glyph separately so the
 // print can drift naturally, with punctuation positioned as in Japanese tategaki.
 export function verticalText(context, text, x, y, size, step, random, shift, weight = 700) {
