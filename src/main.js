@@ -1,5 +1,5 @@
 import './style.css';
-import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk } from './generator.js';
+import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk, downloadFilename } from './generator.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
@@ -58,8 +58,9 @@ function shuffle() { seed = Math.floor(Math.random() * 0xffffffff); render(); }
 $('shuffle').addEventListener('click', shuffle);
 $('shuffleTop').addEventListener('click', shuffle);
 $('download').addEventListener('click', async () => {
+  const filename = downloadFilename($('filename').value);
   await render();
   const link = document.createElement('a');
-  link.download = '告諭ビラ.png'; link.href = canvas.toDataURL('image/png'); link.click();
+  link.download = filename; link.href = canvas.toDataURL('image/png'); link.click();
 });
 render();

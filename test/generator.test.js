@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk } from '../src/generator.js';
+import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk, downloadFilename } from '../src/generator.js';
 
 test('本文の改行ごとに段落ができ、空行も一列として残る', () => {
   const layout = bodyLayout('一、告グ\n\n二、告グ');
@@ -87,4 +87,20 @@ test('かすれはゼロで描画せず、最大では中程度より大幅に�
   const middle = countFlecks(.38), max = countFlecks(1);
   assert.equal(max.mode, 'destination-out');
   assert.ok(max.count > middle.count * 4);
+});
+
+
+test('ファイル名が空欄なら保存時のローカル日時を使う', () => {
+  const now = new Date(2026, 0, 2, 3, 4, 59);
+  assert.equal(downloadFilename('', now), '告諭_20260102_0304.png');
+  assert.equal(downloadFilename(' 　', now), '告諭_20260102_0304.png');
+  assert.equal(downloadFilename('', new Date(2027, 11, 31, 23, 59)), '告諭_20271231_2359.png');
+});
+
+test('指定ファイル名に PNG 拡張子を重複させない', () => {
+  assert.equal(downloadFilename('お知らせ'), 'お知らせ.png');
+  assert.equal(downloadFilename('お知らせ.png'), 'お知らせ.png');
+  assert.equal(downloadFilename('お知らせ.PNG'), 'お知らせ.PNG');
+  assert.equal(downloadFilename('お知らせ.jpg'), 'お知らせ.jpg.png');
+  assert.equal(downloadFilename(' 前後に空白 '), ' 前後に空白 .png');
 });
