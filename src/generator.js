@@ -5,6 +5,12 @@ export function randomGenerator(seedValue) {
 export function settingLabel(n) { return n === 0 ? 'なし' : n < 30 ? 'ひかえめ' : n < 65 ? 'ほどほど' : 'つよめ'; }
 export function textChars(value) { return Array.from(value.replace(/\r/g, '')); }
 
+// Convert standard hiragana and iteration marks, preserving all other text.
+export function toKatakana(text) {
+  return text.replace(/[\u3041-\u3096\u309d\u309e][\u3099\u309a]?/g, match =>
+    (String.fromCharCode(match.charCodeAt(0) + 0x60) + match.slice(1)).normalize('NFC'));
+}
+
 // The default reflects the user's local clock at the time of saving.
 export function downloadFilename(value, now = new Date()) {
   const pad = number => String(number).padStart(2, '0');

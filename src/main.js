@@ -1,5 +1,5 @@
 import './style.css';
-import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk, downloadFilename } from './generator.js';
+import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk, downloadFilename, toKatakana } from './generator.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
@@ -53,6 +53,10 @@ async function render() {
   if (id === renderId) draw();
 }
 for (const id of inputs) $(id).addEventListener('input', render);
+$('convertKana').addEventListener('click', () => {
+  for (const id of inputs.slice(0, 4)) $(id).value = toKatakana($(id).value);
+  return render();
+});
 document.querySelectorAll('input[name="paper"]').forEach(el => el.addEventListener('change', render));
 function shuffle() { seed = Math.floor(Math.random() * 0xffffffff); render(); }
 $('shuffle').addEventListener('click', shuffle);
