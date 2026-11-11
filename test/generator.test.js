@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk, downloadFilename } from '../src/generator.js';
+import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk, downloadFilename, toKatakana } from '../src/generator.js';
 
 test('本文の改行ごとに段落ができ、空行も一列として残る', () => {
   const layout = bodyLayout('一、告グ\n\n二、告グ');
@@ -103,4 +103,13 @@ test('指定ファイル名に PNG 拡張子を重複させない', () => {
   assert.equal(downloadFilename('お知らせ.PNG'), 'お知らせ.PNG');
   assert.equal(downloadFilename('お知らせ.jpg'), 'お知らせ.jpg.png');
   assert.equal(downloadFilename(' 前後に空白 '), ' 前後に空白 .png');
+});
+
+
+test('ひらがなをカタカナに変換し、他の文字や改行を残す', () => {
+  assert.equal(toKatakana('みなさまに告ぐ。\nきょうは晴れ！ABC 123'), 'ミナサマニ告グ。\nキョウハ晴レ！ABC 123');
+  assert.equal(toKatakana('ぁぃぅぇぉっゃゅょゎゕゖ ゔ ゝゞ'), 'ァィゥェォッャュョヮヵヶ ヴ ヽヾ');
+  assert.equal(toKatakana('か\u3099 は\u309a う\u3099'), 'ガ パ ヴ');
+  assert.equal(toKatakana('カタカナ 漢字 ゟ 𛀁'), 'カタカナ 漢字 ゟ 𛀁');
+  assert.equal(toKatakana(''), '');
 });
