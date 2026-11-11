@@ -26,13 +26,16 @@ test('保存ボタンは編集欄の名前または日時のデフォルトで P
     },
   };
   runInNewContext(source, {
-    document, downloadFilename, toKatakana,
+    document, downloadFilename, toKatakana, formatJapaneseDate: () => '十一月十日',
     randomGenerator: () => () => .5,
     textChars: value => Array.from(value),
     settingLabel: () => 'なし',
     verticalText(_context, text) { drawnText.push(text); }, drawPaper() {}, wearInk() {},
     bodyLayout: text => ({ paragraphs: text.split('\n').map(value => Array.from(value)), columns: 2, size: 65, step: 75, rows: 18 }),
   });
+  assert.equal(elements.date.value, '十一月十日');
+  await new Promise(resolve => setImmediate(resolve));
+  assert.ok(drawnText.includes('十一月十日'));
   elements.title.value = 'みなさまへ';
   elements.body.value = 'あした\n晴れ';
   elements.date.value = 'じゅうにち';
@@ -54,4 +57,8 @@ test('保存ボタンは編集欄の名前または日時のデフォルトで P
   const after = downloadFilename('');
   assert.ok([before, after].includes(downloads[1].filename));
   assert.equal(downloads[1].url, 'data:image/png;base64,abc');
+  assert.equal(elements.date.value, 'ジュウニチ');
+  elements.date.value = '';
+  await elements.convertKana.events.click();
+  assert.equal(elements.date.value, '');
 });

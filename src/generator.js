@@ -11,6 +11,17 @@ export function toKatakana(text) {
     (String.fromCharCode(match.charCodeAt(0) + 0x60) + match.slice(1)).normalize('NFC'));
 }
 
+// Match the leaflet's existing month/day style using the local calendar date.
+export function formatJapaneseDate(date = new Date()) {
+  const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const kanji = number => {
+    if (number < 10) return digits[number];
+    const tens = Math.floor(number / 10);
+    return (tens === 1 ? '' : digits[tens]) + '十' + digits[number % 10];
+  };
+  return `${kanji(date.getMonth() + 1)}月${kanji(date.getDate())}日`;
+}
+
 // The default reflects the user's local clock at the time of saving.
 export function downloadFilename(value, now = new Date()) {
   const pad = number => String(number).padStart(2, '0');
