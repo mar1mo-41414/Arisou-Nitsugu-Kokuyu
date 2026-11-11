@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk, downloadFilename, toKatakana } from '../src/generator.js';
+import { bodyLayout, randomGenerator, settingLabel, textChars, verticalText, drawPaper, wearInk, downloadFilename, toKatakana, formatJapaneseDate } from '../src/generator.js';
 
 test('本文の改行ごとに段落ができ、空行も一列として残る', () => {
   const layout = bodyLayout('一、告グ\n\n二、告グ');
@@ -112,4 +112,15 @@ test('ひらがなをカタカナに変換し、他の文字や改行を残す',
   assert.equal(toKatakana('か\u3099 は\u309a う\u3099'), 'ガ パ ヴ');
   assert.equal(toKatakana('カタカナ 漢字 ゟ 𛀁'), 'カタカナ 漢字 ゟ 𛀁');
   assert.equal(toKatakana(''), '');
+});
+
+
+test('日付はローカルの月日を漢数字にする', () => {
+  assert.equal(formatJapaneseDate(new Date(2026, 0, 1)), '一月一日');
+  assert.equal(formatJapaneseDate(new Date(2026, 8, 10)), '九月十日');
+  assert.equal(formatJapaneseDate(new Date(2026, 9, 11)), '十月十一日');
+  assert.equal(formatJapaneseDate(new Date(2026, 10, 20)), '十一月二十日');
+  assert.equal(formatJapaneseDate(new Date(2026, 11, 21)), '十二月二十一日');
+  assert.equal(formatJapaneseDate(new Date(2026, 11, 31, 23, 59)), '十二月三十一日');
+  assert.equal(formatJapaneseDate(new Date(2024, 1, 29)), '二月二十九日');
 });

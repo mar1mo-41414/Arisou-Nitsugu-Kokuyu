@@ -1,5 +1,5 @@
 import './style.css';
-import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk, downloadFilename, toKatakana } from './generator.js';
+import { randomGenerator, settingLabel, textChars, verticalText, bodyLayout, drawPaper, wearInk, downloadFilename, toKatakana, formatJapaneseDate } from './generator.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('canvas');
@@ -11,6 +11,9 @@ const W = canvas.width, H = canvas.height;
 const inputs = ['title', 'body', 'date', 'issuer', 'wear', 'shift'];
 let seed = Math.floor(Math.random() * 1000000);
 let renderId = 0;
+
+// Set once on opening; later edits and empty values remain the user's own.
+if (!$('date').value) $('date').value = formatJapaneseDate();
 
 function draw() {
   const rand = randomGenerator(seed);
